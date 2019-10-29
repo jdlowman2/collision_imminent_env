@@ -3,9 +3,12 @@ import gym
 from gym import error, spaces
 from gym import utils
 from gym.utils import seeding
+import numpy as np
 
-from vehicle_model import Vehicle, State
 from road_model import *
+from vehicle_model import *
+from viewer import *
+
 # After you have installed your package with pip install -e gym-foo,
 # you can create an instance of the environment with
 # gym.make('gym_foo:foo-v0')
@@ -40,32 +43,27 @@ _______________________________________
 y=0
 """
 
-MIN_F_STEERING = -3.0
-MAX_F_STEERING = 3.0
-
-MIN_R_STEERING = -3.0
-MAX_R_STEERING = 3.0
-
+MAX_ENV_STEPS = 100
 
 class LaneChangeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
     def __init__(self):
-        self.observation_space = spaces.Box(low=-1, high=1,
-                                            shape=(self.env.getStateSize()))
+        # Vehicle has 8 states. 8 road and obstacle states
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(16,), dtype=np.float32)
+
         # Action space omits the Tackle/Catch actions, which are useful on defense
-        self.action_space = spaces.Tuple((\
-                    spaces.Box(low=MIN_F_STEERING, high=MAX_F_STEERING, shape=1),
-                    spaces.Box(low=MIN_R_STEERING, high=MAX_R_STEERING, shape=1),
-                    ))
-        self.max_steps = 200
+        self.action_space = spaces.Box(MIN_STEERING, MAX_STEERING, (2,), dtype=np.float32)
+        self.max_steps = MAX_ENV_STEPS
 
         self.road = Road()
+        self.viewer = Viewer(self.road)
+
         self.steps_taken = 0
 
     def step(self, action):
         self.steps_taken += 1
-        self.vehicle.step(action)
+        self.road.vehicle.step(action)
 
         return [self.get_observation(),
                 self.get_reward(),
@@ -79,13 +77,14 @@ class LaneChangeEnv(gym.Env):
         return self.get_observation()
 
     def render(self, mode='human'):
-        pass
+        self.viewer.update_data(self.road)
+        self.viewer.show()
 
     def close(self):
         pass
 
     def get_observation(self):
-        obs = [*self.road.vehicle.state, # unpack 8 state parameters
+        obs = np.array([*self.road.vehicle.state, # unpack 8 state parameters
                 self.road.obstacle.get_left_boundary(),
                 self.road.obstacle.get_right_boundary(),
                 self.road.obstacle.get_start(),
@@ -94,7 +93,7 @@ class LaneChangeEnv(gym.Env):
                 self.road.current_lane.get_right_boundary(),
                 self.road.opposing_lane.get_left_boundary(),
                 self.road.opposing_lane.get_right_boundary(),
-                ]
+                ])
 
         return obs
 
@@ -103,12 +102,15 @@ class LaneChangeEnv(gym.Env):
 
         r_vehicle_on_road = -1 * self.road.is_vehicle_in_road()
         r_vehicle_in_collision = -1 * self.road.is_vehicle_in_collision()
-        r_vehicle_at_goal = +1 * self.road.is_vehicle_at_goal()
+        r_vehicle_at_goal = +1 * self.road.is_vehicle_in_goal()
 
-        return 0
+        return r_vehicle_on_road + r_vehicle_in_collision + r_vehicle_at_goal
 
     def is_done(self):
-        if self.steps_taken >= self.max_steps:
+        if self.steps_taken >= self.max_steps or\
+            self.road.is_vehicle_in_collision() or\
+                self.road.is_vehicle_in_goal():
+
             return True
 
-        return self.road.is_vehicle_in_goal()
+        return False

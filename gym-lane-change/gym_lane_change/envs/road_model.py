@@ -30,7 +30,7 @@ y=0
 """
 
 LANE_WIDTH = 3.7 #m
-VEHICLE_START_STATE = State(0, 0, 0, 35, 0, 0, 0, 0)
+VEHICLE_START_STATE = State(0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0)
 
 class Rectangle:
     def __init__(self, length, width, x, y):
@@ -78,14 +78,16 @@ class Road:
     def reset(self):
         self.vehicle = Vehicle(VEHICLE_START_STATE)
         self.current_lane = Lane(length=1000, width=LANE_WIDTH,
-                                    x=0, y=LANE_WIDTH/2.0)
+                                    x=0, y=0)
         self.opposing_lane = Lane(length=1000, width=LANE_WIDTH,
-                                    x=0, y=LANE_WIDTH*3.0/2.0)
-        self.obstacle = Obstacle(length=2*LANE_WIDTH, width=LANE_WIDTH,
-                                    x=55.0, y=LANE_WIDTH/2.0)
+                                    x=0, y=LANE_WIDTH)
+        self.obstacle = Obstacle(length=2.0*LANE_WIDTH, width=LANE_WIDTH,
+                                    x=55.0, y=0.0)
 
         self.goal = Rectangle(length=5*LANE_WIDTH, width=LANE_WIDTH,
-                                    x=100.0, y=LANE_WIDTH/2.0)
+                                    x=100.0, y=0.0)
+
+        # print("Road reset!")
 
     def is_vehicle_in_road(self):
         if self.current_lane.is_inside(self.vehicle.state.x, self.vehicle.state.y) or \
