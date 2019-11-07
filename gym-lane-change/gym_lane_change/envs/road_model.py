@@ -58,10 +58,10 @@ class Rectangle:
         return self.y - self.width/2.0
 
     def get_start(self):
-        return self.x - self.width/2.0
+        return self.x - self.length/2.0
 
     def get_end(self):
-        return self.x + self.width/2.0
+        return self.x + self.length/2.0
 
 
 class Lane(Rectangle):
@@ -81,6 +81,7 @@ class Road:
                                     x=0, y=0)
         self.opposing_lane = Lane(length=1000, width=LANE_WIDTH,
                                     x=0, y=LANE_WIDTH)
+        # obs_x =  np.random.random()*50.0 + 55.0
         self.obstacle = Obstacle(length=2.0*LANE_WIDTH, width=LANE_WIDTH,
                                     x=55.0, y=0.0)
 

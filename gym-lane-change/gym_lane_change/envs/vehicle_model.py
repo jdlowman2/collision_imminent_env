@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 
 import IPython
 
-MIN_STEERING = np.radians(-35.0)
-MAX_STEERING = np.radians(35.0)
-
 MIN_F_STEERING = np.radians(-35.0)
 MAX_F_STEERING = np.radians(35.0)
 
@@ -43,6 +40,10 @@ class Vehicle:
         self.L_f = 1.56 # front wheel to CG distance
         self.L_r = 1.64 # rear wheel to CG distance
 
+        self.F_zf = 0.514 * self.mass # mass distribution
+        self.F_zr = 0.486 * self.mass # mass distribution
+        assert(abs((self.F_zf + self.F_zr) - self.mass) < 1E-5)
+
         # Tire Properties
         self.mu = 0.8 # friction
         self.B  = 13.0 # empirical tire property
@@ -52,20 +53,16 @@ class Vehicle:
         self.d_state = State(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         self.delta_t = VEHICLE_TIMESTEP
 
-        self.F_zf = 0.514 * self.mass
-        self.F_zr = 0.486 * self.mass
-
         self.integration_steps = INTEGRATION_STEPS_PER_UPDATE
 
-        assert(abs((self.F_zf + self.F_zr) - self.mass) < 1E-5)
-
     def step(self, action):
-        for i in range(self.integration_steps):
+        for int_step in range(self.integration_steps):
             self.d_state = self.compute_dx(action)
 
             s1 = []
-            for i in range(len(self.state)):
-                s1.append(self.state[i] + self.delta_t * self.d_state[i])
+            for ind in range(len(self.state)):
+                s1.append(self.state[ind] + \
+                    self.delta_t * self.d_state[ind])
 
             s1[-2:] = saturate_steering(s1[-2:])
 
@@ -80,7 +77,7 @@ class Vehicle:
             Vx = V_x(delta, L)
             Vy = V_y(delta, L)
 
-            return -Vy / Vx * sin(self.C * arctan(self.B * Vy / Vx))
+            return sin(self.C * arctan(self.B * Vy / Vx))
 
         def V_x(delta, L):
             return self.state.u*cos(delta) + \
@@ -93,9 +90,21 @@ class Vehicle:
                         * cos(delta)
 
         action = Input(action_input[0], action_input[1])
-
+        self.action = action
         assert(action.delta_f_dot == action_input[0])
         assert(action.delta_r_dot == action_input[1])
+
+        self.vxf = V_x(self.state.delta_f, self.L_f)
+        self.vyf = V_y(self.state.delta_f, self.L_f)
+        self.sigma_yf = sigma_y(self.state.delta_f, self.L_f)
+        self.F_yf = F_y(self.state.delta_f, self.L_f, self.F_zf)
+        F_yf = self.F_yf
+
+        self.vxr = V_x(self.state.delta_r, self.L_r)
+        self.vyr = V_y(self.state.delta_r, self.L_r)
+        self.sigma_yr = sigma_y(self.state.delta_r, self.L_r)
+        self.F_yr = F_y(self.state.delta_r, self.L_r, self.F_zr)
+        F_yr = self.F_yr
 
         dx = self.state.u*cos(self.state.psi) -\
                 self.state.v*sin(self.state.psi)
@@ -106,9 +115,6 @@ class Vehicle:
         dpsi = self.state.omega
         du = 0.0
 
-        F_yf = F_y(self.state.delta_f, self.L_f, self.F_zf)
-        F_yr = F_y(self.state.delta_r, self.L_r, self.F_zr)
-
         dv = -1.0 * self.state.u*self.state.omega + \
                     1.0/self.mass * ( F_yr*cos(self.state.delta_r) + \
                     F_yf * cos(self.state.delta_f) )
@@ -118,8 +124,7 @@ class Vehicle:
                     self.L_f*F_yf * cos(self.state.delta_f))
 
         return State(dx, dy, dpsi, du, dv, domega,
-                            action.delta_f_dot, action.delta_r_dot)
-
+                        action.delta_f_dot, action.delta_r_dot)
 
     def __repr__(self):
         s = State(*[round(i, 3) for i in [*self.state]])

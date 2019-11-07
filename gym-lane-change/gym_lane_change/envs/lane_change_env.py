@@ -52,8 +52,7 @@ class LaneChangeEnv(gym.Env):
         # Vehicle has 8 states. 8 road and obstacle states
         self.observation_space = spaces.Box(-np.inf, np.inf, shape=(16,), dtype=np.float32)
 
-        # Action space omits the Tackle/Catch actions, which are useful on defense
-        self.action_space = spaces.Box(MIN_STEERING, MAX_STEERING, (2,), dtype=np.float32)
+        self.action_space = spaces.Box(MIN_F_STEERING, MAX_F_STEERING, (2,), dtype=np.float32)
         self.max_steps = MAX_ENV_STEPS
 
         self.road = Road()
@@ -64,6 +63,8 @@ class LaneChangeEnv(gym.Env):
     def step(self, action):
         self.steps_taken += 1
         self.road.vehicle.step(action)
+
+        self.viewer.last_reward = self.get_reward()
 
         return [self.get_observation(),
                 self.get_reward(),
@@ -97,20 +98,38 @@ class LaneChangeEnv(gym.Env):
 
         return obs
 
-
     def get_reward(self):
+        r_dist = 40.0*self.get_r_dist()**2
+        r_vehicle_on_road = -1.0* (not self.road.is_vehicle_in_road()) #*\
+                         # 1.0*np.linalg.norm(self.road.vehicle.state.y - \
+                         #        self.road.current_lane.get_left_boundary())**2
 
-        r_vehicle_on_road = -1 * self.road.is_vehicle_in_road()
-        r_vehicle_in_collision = -1 * self.road.is_vehicle_in_collision()
-        r_vehicle_at_goal = +1 * self.road.is_vehicle_in_goal()
+        r_vehicle_in_collision = -1.5 * self.road.is_vehicle_in_collision()
+        r_vehicle_at_goal = +1.0 * self.road.is_vehicle_in_goal()
 
-        return r_vehicle_on_road + r_vehicle_in_collision + r_vehicle_at_goal
+        return r_vehicle_on_road + \
+                r_vehicle_in_collision + \
+                r_vehicle_at_goal + \
+                r_dist
+
+    def get_r_dist(self):
+        vehicle_start = np.array([VEHICLE_START_STATE.x/10.0, VEHICLE_START_STATE.y])
+        goal_pos = np.array([self.road.goal.x/10.0, self.road.goal.y])
+        vehicle_curr = np.array([self.road.vehicle.state.x/10.0, self.road.vehicle.state.y])
+
+        max_dist = np.linalg.norm(vehicle_start - goal_pos)
+        current_dist = np.linalg.norm(vehicle_curr - goal_pos)
+
+        return max(0.0, 0.05 / (0.1 + 1.0*current_dist/(max_dist)))
+
 
     def is_done(self):
         if self.steps_taken >= self.max_steps or\
             self.road.is_vehicle_in_collision() or\
                 self.road.is_vehicle_in_goal():
 
+            self.viewer.is_done = True
             return True
 
+        self.viewer.is_done=False
         return False

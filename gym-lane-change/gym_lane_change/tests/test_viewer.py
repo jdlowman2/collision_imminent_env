@@ -1,3 +1,9 @@
+import sys
+import unittest
+
+sys.path.append("C:/Users/jdlow/Box/Fall 2019/ROB 590 RL for Driving/collision_environment/gym-lane-change/gym_lane_change/envs/")
+sys.path.append("C:/Users/jdlow/Box/Fall 2019/ROB 590 RL for Driving/collision_environment/gym-lane-change/gym_lane_change/tests/")
+
 from lane_change_env import *
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -10,7 +16,7 @@ road = Road()
 viewer = Viewer(road)
 
 for i in range(50):
-    road.vehicle.step(np.array([np.radians(3.0),
+    road.vehicle.step(np.array([np.radians(-3.0),
                                   np.radians(1.0)]))
     viewer.update_data(road)
     viewer.show()
