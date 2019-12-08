@@ -3,25 +3,26 @@ from numpy import sin, cos, arctan
 from collections import namedtuple
 import time
 import matplotlib.pyplot as plt
+from rectangle import *
 
 import IPython
 
 MIN_F_STEERING = np.radians(-35.0)
 MAX_F_STEERING = np.radians(35.0)
 
-MIN_R_STEERING = np.radians(-10.0)
-MAX_R_STEERING = np.radians(10.0)
+MIN_R_STEERING = np.radians(-5.0)
+MAX_R_STEERING = np.radians(5.0)
 
 ## These parameters should change together
-VEHICLE_TIMESTEP = 0.1
-INTEGRATION_STEPS_PER_UPDATE = 1
+VEHICLE_TIMESTEP = 0.01
+INTEGRATION_STEPS_PER_UPDATE = 10
 ##
 
-def saturate_steering(delta):
+def saturate_steering(delta, min_f, max_f, min_r, max_r):
     delta_f, delta_r = delta
 
-    return max(MIN_F_STEERING, min(MAX_F_STEERING, delta_f)),\
-            max(MIN_R_STEERING, min(MAX_R_STEERING, delta_r))
+    return max(min_f, min(max_f, delta_f)),\
+            max(min_r, min(max_r, delta_r))
 
 State = namedtuple("State", \
                     ["x", "y", "psi", \
@@ -55,6 +56,14 @@ class Vehicle:
 
         self.integration_steps = INTEGRATION_STEPS_PER_UPDATE
 
+        self.max_f = MAX_F_STEERING
+        self.max_r = MAX_R_STEERING
+        self.min_f = MIN_F_STEERING
+        self.min_r = MIN_R_STEERING
+
+    def get_rectangle(self):
+        return Rectangle(self.length, self.width, self.state.x, self.state.y)
+
     def step(self, action):
         for int_step in range(self.integration_steps):
             self.d_state = self.compute_dx(action)
@@ -64,7 +73,9 @@ class Vehicle:
                 s1.append(self.state[ind] + \
                     self.delta_t * self.d_state[ind])
 
-            s1[-2:] = saturate_steering(s1[-2:])
+            s1[-2:] = saturate_steering(s1[-2:],
+                                            self.min_f, self.max_f,
+                                            self.min_r, self.max_r)
 
             self.state = State(*s1)
 
