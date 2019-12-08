@@ -8,6 +8,7 @@ class Rectangle:
         self.y = y
 
     def is_inside(self, x, y):
+        # Checks if the point x,y is within the rectangle
         lower_x = self.x - self.length/2.0
         upper_x = self.x + self.length/2.0
         lower_y = self.y - self.width/2.0
@@ -15,6 +16,29 @@ class Rectangle:
 
         if x <= upper_x and x >= lower_x:
             if y <= upper_y and y >= lower_y:
+                return True
+
+        return False
+
+    def get_corners(self):
+        corners = []
+
+        for delta_x in [self.length/2.0, -self.length/2.0]:
+            for delta_y in [self.width/2.0, -self.width/2.0]:
+                corners.append([self.x + delta_x, self.y + delta_y])
+
+        return corners
+
+    def intersects(self, other):
+        if self.is_inside(other.x, other.y) or other.is_inside(self.x, self.y):
+            return True
+
+        for c in self.get_corners():
+            if other.is_inside(c[0], c[1]):
+                return True
+
+        for c in other.get_corners():
+            if self.is_inside(c[0], c[1]):
                 return True
 
         return False

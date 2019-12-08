@@ -46,7 +46,7 @@ class Road:
         self.reset()
 
     def reset(self):
-        speed = np.random.uniform(low=5.0, high=25.0)
+        speed = np.random.uniform(low=20.0, high=35.0)
 
         start_x = np.random.uniform(low = 0.0, high = 10.0)
         start_y = np.random.uniform(low=-LANE_WIDTH/2.0,  high=1.5*LANE_WIDTH)
@@ -68,28 +68,29 @@ class Road:
         # obs_y =  np.random.uniform(loc=0.0, scale=10.0)
         # obs_w =  np.random.uniform(loc=LANE_WIDTH, scale=0.1*LANE_WIDTH)
         # obs_l =  np.random.uniform(loc=2.0*LANE_WIDTH, scale=0.1*LANE_WIDTH)
-        obs_x =  600.0
-        obs_y =  990.0
-        obs_w =  LANE_WIDTH
+        obs_x =  60.0
+        obs_y =  0.0
+        obs_w =  0.5*LANE_WIDTH
         obs_l =  2.0*LANE_WIDTH
 
         self.obstacle = Obstacle(length=obs_l, width=obs_w,
                                     x=obs_x, y=obs_y)
 
-        self.goal = Rectangle(length=5*LANE_WIDTH, width=LANE_WIDTH,
+        self.goal = Rectangle(length=5*LANE_WIDTH, width=0.5*LANE_WIDTH,
                                     x=100.0, y=0.0)
 
 
     def is_vehicle_in_road(self):
+        # allows part of the vehicle outside lane as long as center of vehicle
+        # is inside
         return self.current_lane.is_inside(self.vehicle.state.x, self.vehicle.state.y) or \
             self.opposing_lane.is_inside(self.vehicle.state.x, self.vehicle.state.y)
 
     def is_vehicle_in_collision(self):
-        return self.obstacle.is_inside(self.vehicle.state.x, self.vehicle.state.y)
+        return self.obstacle.intersects(self.vehicle.get_rectangle())
 
     def is_vehicle_in_goal(self):
-        return self.goal.is_inside(self.vehicle.state.x, self.vehicle.state.y) or \
-                    self.vehicle.get_rectangle().is_inside(self.goal.x, self.goal.y)
+        return self.goal.intersects(self.vehicle.get_rectangle())
 
     def get_observation(self):
         obs = np.array([

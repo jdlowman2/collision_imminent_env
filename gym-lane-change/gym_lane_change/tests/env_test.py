@@ -13,7 +13,7 @@ def make_dummy_vehicle(x, y):
     return Vehicle(state)
 
 class TestRectangle(unittest.TestCase):
-    def validate_inside(self, r):
+    def validate_origin_rect_inside(self, r):
         self.assertTrue(r.is_inside(0, 0))
 
         self.assertTrue(r.is_inside(2.5, 0))
@@ -28,15 +28,63 @@ class TestRectangle(unittest.TestCase):
 
     def test_shapes(self):
         r = Rectangle(length=5, width=10, x=0, y=0)
-        self.validate_inside(r)
+        self.validate_origin_rect_inside(r)
 
     def test_lane_inheritance(self):
         r = Lane(length=5, width=10, x=0, y=0)
-        self.validate_inside(r)
+        self.validate_origin_rect_inside(r)
 
     def test_obstacle_inheritance(self):
         r = Obstacle(length=5, width=10, x=0, y=0)
-        self.validate_inside(r)
+        self.validate_origin_rect_inside(r)
+
+    def test_corners(self):
+        r1 = Rectangle(1.0, 1.0, 0.5, 0.5)
+        corners = r1.get_corners()
+        self.assertTrue([1.0, 1.0] in corners)
+        self.assertTrue([0.0, 1.0] in corners)
+        self.assertTrue([1.0, 0.0] in corners)
+        self.assertTrue([0.0, 0.0] in corners)
+
+        r1 = Rectangle(1.0, 1.0, 0.0, 0.0)
+        corners = r1.get_corners()
+        self.assertTrue([0.5, 0.5] in corners)
+        self.assertTrue([0.5, -0.5] in corners)
+        self.assertTrue([-0.5, 0.5] in corners)
+        self.assertTrue([-0.5, -0.5] in corners)
+
+        r1 = Rectangle(1.0, 1.0, -.75, -.75)
+        corners = r1.get_corners()
+        self.assertTrue([-0.25, -0.25] in corners)
+        self.assertTrue([-0.25, -1.25] in corners)
+        self.assertTrue([-1.25, -0.25] in corners)
+        self.assertTrue([-1.25, -1.25] in corners)
+
+    def test_touching_rectangle(self):
+        r1 = Rectangle(1.0, 1.0, 0.5, 0.5)
+        r2 = Rectangle(1.0, 1.0, 0.75, 0.5)
+        self.assertTrue(r1.intersects(r2))
+
+        r1 = Rectangle(1.0, 1.0, 0.5, 0.5)
+        r2 = Rectangle(1.0, 1.0, 0.75, 0.75)
+        self.assertTrue(r1.intersects(r2))
+
+        r1 = Rectangle(1.0, 1.0, 0.5, 0.5)
+        r2 = Rectangle(1.0, 1.0, 0.5, 0.75)
+        self.assertTrue(r1.intersects(r2))
+
+        r1 = Rectangle(1.0, 1.0, 0.5, 0.5)
+        r2 = Rectangle(1.0, 1.0, 0.0, 0.0)
+        self.assertTrue(r1.intersects(r2))
+
+        r1 = Rectangle(1.0, 1.0, 0.5, 0.5)
+        r2 = Rectangle(1.0, 1.0, -0.25, -0.25)
+        self.assertTrue(r1.intersects(r2))
+
+        r1 = Rectangle(1.0, 1.0, 0.5, 0.5)
+        r2 = Rectangle(1.0, 1.0, -0.499, -0.5)
+        self.assertTrue(r1.intersects(r2))
+
 
 class TestRoad(unittest.TestCase):
 
@@ -53,6 +101,9 @@ class TestRoad(unittest.TestCase):
 
 
 class TestEnv(unittest.TestCase):
+
+    def reset(self):
+        plt.close('all')
 
     def test_vehicle_in_road(self):
         road = Road()
@@ -76,7 +127,7 @@ class TestEnv(unittest.TestCase):
         self.assertTrue(road.is_vehicle_in_collision())
 
         road.vehicle = make_dummy_vehicle(\
-                        road.obstacle.x - road.obstacle.length/2.0 - 1.0,
+                        road.obstacle.x - road.obstacle.length/2.0- road.vehicle.length/2.0 - 1.0,
                         road.obstacle.y)
         self.assertFalse(road.is_vehicle_in_collision())
 
@@ -93,7 +144,7 @@ class TestEnv(unittest.TestCase):
 
 
         road.vehicle = make_dummy_vehicle(road.goal.x - \
-                                road.goal.length/2.0 -1.0, road.goal.y)
+                                road.goal.length/2.0 - road.vehicle.length/2.0 - 1.0, road.goal.y)
         self.assertFalse(road.is_vehicle_in_goal())
 
 
@@ -101,7 +152,6 @@ class TestEnv(unittest.TestCase):
         env = LaneChangeEnv(False)
         env.road.vehicle = make_dummy_vehicle(env.road.goal.x, env.road.goal.y)
         self.assertTrue(env.get_reward() > 0.99)
-
 
         env.road.vehicle = make_dummy_vehicle(0.0, 0.0)
         self.assertTrue(abs(env.get_reward()) < 1.0)
@@ -128,16 +178,20 @@ class TestEnv(unittest.TestCase):
         self.assertFalse((s1==s2).all())
 
     def test_car_corner_in_goal(self):
+        self.reset()
         env = LaneChangeEnv()
         env.road.vehicle = make_dummy_vehicle(env.road.goal.x - 0.49*env.road.goal.get_length() - 0.4*env.road.vehicle.length,
                                                 env.road.goal.y)
-        print("vehicle: ", env.road.vehicle.get_rectangle())
-        print("goal: ", env.road.goal)
+        # print("vehicle: ", env.road.vehicle.get_rectangle())
+        # print("goal: ", env.road.goal)
         self.assertTrue(env.road.is_vehicle_in_goal(), "The environment should evaluate the vehicle as within the goal")
 
+        self.reset()
+        env = LaneChangeEnv()
+        env.road.vehicle = make_dummy_vehicle(env.road.goal.x - env.road.vehicle.length/2.0-1.0,
+                                        env.road.goal.y - env.road.vehicle.length/2.0 - 0.1)
 
-        # IPython.embed()
-
+        self.assertTrue(env.road.is_vehicle_in_goal(), "The environment should evaluate the vehicle as within the goal")
 
 if __name__ == '__main__':
     unittest.main()

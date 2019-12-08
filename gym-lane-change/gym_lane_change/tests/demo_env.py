@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import argparse
 
 import IPython
 import time
@@ -24,29 +25,21 @@ def show_setup():
         time.sleep(0.9)
     env.close()
 
-def demonstrate():
-    env = LaneChangeEnv()
-    s = env.reset()
-    done = False
 
-    for i in range(20):
-        env.render()
-        s, r, done, info = env.step(env.action_space.sample()) # random action
-        print("Observation: \n", s)
-
-    # IPython.embed()
-
-    env.close()
-
-def demonstrate_hard_coded_action(action):
-    env = LaneChangeEnv()
+def demonstrate_action(action="random", sparse=False):
+    env = LaneChangeEnv(sparse)
     s = env.reset()
     done = False
     total_reward = 0.0
 
     while not done:
         env.render()
-        s, r, done, info = env.step(action) # random action
+        if type(action)==str and action.lower() == "random":
+            a = env.action_space.sample()
+        else:
+            a = action
+
+        s, r, done, info = env.step(a) # random action
         total_reward += r
         print("Total reward: ", total_reward)
     env.close()
@@ -167,17 +160,28 @@ def test_vehicle_rectangle():
     plt.close()
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--sparse", action="store_true")
+    args = parser.parse_args()
+
     np.set_printoptions(precision=2, suppress=True)
     # show_setup()
-    test_vehicle_rotation()
-    # demonstrate()
+    # test_vehicle_rotation()
 
+    sparse = args.sparse
     env = LaneChangeEnv()
+
+    print(f"Demonstrating with sparse? {sparse}")
+
+    print("Demonstrating random action...")
+    demonstrate_action("random", sparse)
+
     print("Demonstrating zero turning...")
-    demonstrate_hard_coded_action(0*env.action_space.low)
+    demonstrate_action(0*env.action_space.low, sparse)
 
     print("Demonstrating low action...")
-    demonstrate_hard_coded_action(env.action_space.low)
+    demonstrate_action(env.action_space.low, sparse)
 
     print("Demonstrating high action...")
-    demonstrate_hard_coded_action(env.action_space.high)
+    demonstrate_action(env.action_space.high, sparse)

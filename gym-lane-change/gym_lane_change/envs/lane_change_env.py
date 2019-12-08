@@ -71,7 +71,7 @@ class LaneChangeEnv(gym.Env):
                                 "min_y": -10.0, "max_y": 20.0}
 
         self.sparse_reward=sparse_reward
-        self.penalty = -0.1
+        self.penalty = 0.1
 
         # self.action_space = spaces.Box(low = np.array([self.road.vehicle.min_f,
         #                                 self.road.vehicle.min_r]),
@@ -145,8 +145,8 @@ class LaneChangeEnv(gym.Env):
         is_done = False
 
         if self.steps_taken >= self.max_steps or\
-            self.road.is_vehicle_in_collision() or\
-                self.road.is_vehicle_in_goal():
+            self.road.is_vehicle_in_collision():# or\
+                # self.road.is_vehicle_in_goal():
 
             # print("Done because: ", self.steps_taken >= self.max_steps,
             # self.road.is_vehicle_in_collision(),
