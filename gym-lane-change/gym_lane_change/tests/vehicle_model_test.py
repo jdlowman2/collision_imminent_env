@@ -64,13 +64,19 @@ class TestVehicle(unittest.TestCase):
                                                  0.0, 0.0))
 
     def test_saturate_steering(self):
-        f, r = saturate_steering([MAX_F_STEERING, MAX_R_STEERING])
+        f, r = saturate_steering([MAX_F_STEERING, MAX_R_STEERING],
+                                            MIN_F_STEERING, MAX_F_STEERING,
+                                            MIN_R_STEERING, MAX_R_STEERING)
         assert(f == MAX_F_STEERING and r == MAX_R_STEERING)
 
-        f, r = saturate_steering([0.5*MAX_F_STEERING, 0.5*MAX_R_STEERING])
+        f, r = saturate_steering([0.5*MAX_F_STEERING, 0.5*MAX_R_STEERING],
+                                            MIN_F_STEERING, MAX_F_STEERING,
+                                            MIN_R_STEERING, MAX_R_STEERING)
         assert(f == 0.5*MAX_F_STEERING and r == 0.5*MAX_R_STEERING)
 
-        f, r = saturate_steering([-1.1*MAX_F_STEERING, -1.1*MAX_R_STEERING])
+        f, r = saturate_steering([-1.1*MAX_F_STEERING, -1.1*MAX_R_STEERING],
+                                            MIN_F_STEERING, MAX_F_STEERING,
+                                            MIN_R_STEERING, MAX_R_STEERING)
         assert(f == MIN_F_STEERING and r == MIN_R_STEERING)
 
     def test_delta_x(self):
@@ -110,6 +116,14 @@ class TestVehicle(unittest.TestCase):
 
             diff.append(abs(vehicle.state[state_var_ind] - new_val))
             self.assertTrue(diff[-1] <= 1E-4)
+
+
+    def test_vehicle_rectangle(self):
+        for test_num in range(10):
+            vehicle = make_dummy_vehicle(*np.random.random(3))
+            self.assertTrue(vehicle.get_rectangle().x == vehicle.state.x)
+            self.assertTrue(vehicle.get_rectangle().y == vehicle.state.y)
+
 
 def plot_vehicle(step):
     fig, ax = plt.subplots(1, 1, sharex=True, sharey=True)
