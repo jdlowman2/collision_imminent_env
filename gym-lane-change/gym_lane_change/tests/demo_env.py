@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 
 import IPython
+import time
 
 import sys
 import unittest
@@ -13,6 +14,16 @@ sys.path.append("C:/Users/jdlow/Box/Fall 2019/ROB 590 RL for Driving/collision_e
 
 from lane_change_env import *
 
+def show_setup():
+    env = LaneChangeEnv()
+    env.reset()
+
+    for i in range(20):
+        env.render()
+        env.reset()
+        time.sleep(0.9)
+    env.close()
+
 def demonstrate():
     env = LaneChangeEnv()
     s = env.reset()
@@ -21,8 +32,26 @@ def demonstrate():
     for i in range(20):
         env.render()
         s, r, done, info = env.step(env.action_space.sample()) # random action
+        print("Observation: \n", s)
+
+    # IPython.embed()
 
     env.close()
+
+def demonstrate_hard_coded_action(action):
+    env = LaneChangeEnv()
+    s = env.reset()
+    done = False
+    total_reward = 0.0
+
+    while not done:
+        env.render()
+        s, r, done, info = env.step(action) # random action
+        total_reward += r
+        print("Total reward: ", total_reward)
+    env.close()
+
+    return total_reward
 
 def test_vehicle_rotation():
     plt.ion()
@@ -66,9 +95,8 @@ def test_vehicle_rotation():
 
         plt.plot([x, x+5*np.cos(heading)], [y,y+5*np.sin(heading)], "red")
 
-        plt.pause(0.9)
+        plt.pause(0.1)
     input("Press <enter> to quit")
-
 
 def test_vehicle_rectangle():
     plt.ion()
@@ -135,10 +163,21 @@ def test_vehicle_rectangle():
 
     plt.pause(0.1)
 
-    # IPython.embed()
     input("Press <enter> to quit")
+    plt.close()
 
 if __name__ == "__main__":
+    np.set_printoptions(precision=2, suppress=True)
+    # show_setup()
+    test_vehicle_rotation()
     # demonstrate()
 
-    test_vehicle_rotation()
+    env = LaneChangeEnv()
+    print("Demonstrating zero turning...")
+    demonstrate_hard_coded_action(0*env.action_space.low)
+
+    print("Demonstrating low action...")
+    demonstrate_hard_coded_action(env.action_space.low)
+
+    print("Demonstrating high action...")
+    demonstrate_hard_coded_action(env.action_space.high)

@@ -61,7 +61,7 @@ class TestEnv(unittest.TestCase):
         road.vehicle = make_dummy_vehicle(0.0, - 1.1 * LANE_WIDTH)
         self.assertFalse(road.is_vehicle_in_road())
 
-        road.vehicle = make_dummy_vehicle(500.0, 0.0)
+        road.vehicle = make_dummy_vehicle(road.goal.x, road.goal.y)
         self.assertTrue(road.is_vehicle_in_road())
 
     def test_vehicle_in_collision(self):
@@ -98,8 +98,46 @@ class TestEnv(unittest.TestCase):
 
 
     def test_rewards(self):
-        road = Road()
-        ## TODO
+        env = LaneChangeEnv(False)
+        env.road.vehicle = make_dummy_vehicle(env.road.goal.x, env.road.goal.y)
+        self.assertTrue(env.get_reward() > 0.99)
+
+
+        env.road.vehicle = make_dummy_vehicle(0.0, 0.0)
+        self.assertTrue(abs(env.get_reward()) < 1.0)
+
+        env.road.vehicle = make_dummy_vehicle(50.0, 15.0)
+        r_outside_lane = env.get_reward()
+        self.assertTrue(r_outside_lane < 0.0)
+
+        env.road.vehicle = make_dummy_vehicle(env.road.obstacle.x, env.road.obstacle.y)
+        r_collision = env.get_reward()
+        self.assertTrue(r_collision < r_outside_lane, f"collision reward {r_collision}, outside lane reward {r_outside_lane}")
+
+    def test_sparse_rewards(self):
+        env = LaneChangeEnv(True)
+        env.road.vehicle = make_dummy_vehicle(env.road.goal.x, env.road.goal.y)
+        self.assertTrue(env.get_reward() > 0.99)
+
+
+    def test_reset(self):
+        env = LaneChangeEnv()
+        s1 = env.reset()
+        s2 = env.reset()
+
+        self.assertFalse((s1==s2).all())
+
+    def test_car_corner_in_goal(self):
+        env = LaneChangeEnv()
+        env.road.vehicle = make_dummy_vehicle(env.road.goal.x - 0.49*env.road.goal.get_length() - 0.4*env.road.vehicle.length,
+                                                env.road.goal.y)
+        print("vehicle: ", env.road.vehicle.get_rectangle())
+        print("goal: ", env.road.goal)
+        self.assertTrue(env.road.is_vehicle_in_goal(), "The environment should evaluate the vehicle as within the goal")
+
+
+        # IPython.embed()
+
 
 if __name__ == '__main__':
     unittest.main()
