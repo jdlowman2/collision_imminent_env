@@ -49,7 +49,7 @@ MAX_ENV_STEPS = 200
 class LaneChangeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, sparse_reward=False):
+    def __init__(self, sparse_reward=False, num_obstacles=1):
         self._max_episode_steps = MAX_ENV_STEPS
         self.spec = gym.envs.registration.EnvSpec("LaneChangeEnv-v0")
         self.max_steps = MAX_ENV_STEPS
@@ -68,6 +68,8 @@ class LaneChangeEnv(gym.Env):
                                 "min_y": -10.0, "max_y": 20.0}
 
         self.sparse_reward=sparse_reward
+        self.num_obstacles=num_obstacles
+        assert(num_obstacles==1) ## TODO: Remove when implemented
         self.penalty = 0.1
 
     def scale_action_to_model(self, action):

@@ -51,10 +51,10 @@ class Road:
         start_x = np.random.uniform(low = 0.0, high = 10.0)
         start_y = np.random.uniform(low=-LANE_WIDTH/2.0,  high=1.5*LANE_WIDTH)
 
-        start_h = np.random.uniform(low=-np.radians(10.0), high=np.radians(10.0))
+        start_h = np.random.uniform(low=-np.radians(5.0), high=np.radians(5.0))
 
-        front_wheel_angle = np.random.uniform(low=-np.radians(10.0), high=np.radians(10.0))
-        rear_wheel_angle = np.random.uniform(low=-np.radians(4.0), high=np.radians(4.0))
+        front_wheel_angle = np.random.uniform(low=-np.radians(5.0), high=np.radians(5.0))
+        rear_wheel_angle = np.random.uniform(low=-np.radians(1.0), high=np.radians(1.0))
 
         start_state = State(start_x, start_y, start_h, speed, start_h, start_h, front_wheel_angle, rear_wheel_angle)
 
@@ -64,10 +64,14 @@ class Road:
         self.opposing_lane = Lane(length=1000, width=LANE_WIDTH,
                                     x=-100, y=LANE_WIDTH)
 
-        obs_x =  np.random.uniform(low=55.0,  high=65.0)
-        obs_y =  np.random.uniform(low=-0.1,  high=0.1)
-        obs_w =  np.random.uniform(low=0.45*LANE_WIDTH,  high=0.55*LANE_WIDTH)
-        obs_l =  np.random.uniform(low=1.9*LANE_WIDTH,  high=2.1*LANE_WIDTH)
+        # obs_x =  np.random.uniform(low=55.0,  high=65.0)
+        # obs_y =  np.random.uniform(low=-0.1,  high=0.1)
+        # obs_w =  np.random.uniform(low=0.45*LANE_WIDTH,  high=0.55*LANE_WIDTH)
+        # obs_l =  np.random.uniform(low=1.9*LANE_WIDTH,  high=2.1*LANE_WIDTH)
+
+        obs_x, obs_y =  60.0, 0.0
+        obs_w =  0.5*LANE_WIDTH
+        obs_l =  2.0*LANE_WIDTH
 
         self.obstacle = Obstacle(length=obs_l, width=obs_w,
                                     x=obs_x, y=obs_y)
