@@ -14,8 +14,9 @@ class Rectangle:
         lower_y = self.y - self.width/2.0
         upper_y = self.y + self.width/2.0
 
-        if x <= upper_x and x >= lower_x:
-            if y <= upper_y and y >= lower_y:
+        if lower_x <= x <= upper_x:
+            # if y <= upper_y and y >= lower_y:
+            if lower_y <= y <= upper_y:
                 return True
 
         return False

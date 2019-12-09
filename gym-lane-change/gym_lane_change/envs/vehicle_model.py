@@ -14,7 +14,7 @@ MAX_R_STEERING = np.radians(10.0)
 MIN_R_STEERING = -MAX_R_STEERING
 
 ## These parameters should change together
-VEHICLE_TIMESTEP = 0.01
+VEHICLE_TIMESTEP = 0.05
 INTEGRATION_STEPS_PER_UPDATE = 10
 ##
 
@@ -83,7 +83,7 @@ class Vehicle:
             s1 = []
             for ind in range(len(self.state)):
                 s1.append(self.state[ind] + \
-                    self.delta_t * self.d_state[ind])
+                    self.delta_t / self.integration_steps * self.d_state[ind])
 
             s1[-2:] = saturate_steering(s1[-2:],
                                             self.min_f, self.max_f,

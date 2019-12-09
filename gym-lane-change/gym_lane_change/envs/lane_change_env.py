@@ -44,7 +44,7 @@ _______________________________________
 y=0
 """
 
-MAX_ENV_STEPS = 100
+MAX_ENV_STEPS = 200
 
 class LaneChangeEnv(gym.Env):
     metadata = {'render.modes': ['human']}
@@ -116,7 +116,8 @@ class LaneChangeEnv(gym.Env):
 
     def get_reward(self):
         if self.sparse_reward:
-            return (10.0 + self.penalty)*self.road.is_vehicle_in_goal() - self.penalty
+            return (10.0 + self.penalty) * self.road.is_vehicle_in_goal() - \
+                        self.penalty - 10.0*self.road.is_vehicle_in_collision()
 
         r_dist = self.get_r_dist()**2
         r_vehicle_on_road = -1.0 * (not self.road.is_vehicle_in_road())
@@ -127,7 +128,8 @@ class LaneChangeEnv(gym.Env):
         return -self.penalty + r_vehicle_on_road + \
                 r_vehicle_in_collision + \
                 r_vehicle_at_goal +\
-                r_dist
+                r_dist +\
+                -0.1*self.is_vehicle_outside_valid_region()
 
     def get_r_dist(self):
         vehicle_start = np.array([VEHICLE_START_STATE.x/10.0, VEHICLE_START_STATE.y])
