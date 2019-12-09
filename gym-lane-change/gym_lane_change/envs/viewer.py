@@ -130,8 +130,11 @@ class Viewer:
             s="Reward:\n"+str(round(self.last_reward, 2)),
             color="black")
 
-        self.plt_text["speed"] = self.ax.text(x=40.0, y=15.0,
-            s="Speed:\n"+str(round(self.road.vehicle.state.u, 2)),
+        self.plt_text["speed"] = self.ax.text(x=40.0, y=17.0,
+            s=f"Speed: {round(self.road.vehicle.state.u, 2)} m/s",
+            color="black")
+        self.plt_text["heading"] = self.ax.text(x=40.0, y=14.0,
+            s=f"Heading: {round(np.degrees(self.road.vehicle.state.psi), 2)} deg",
             color="black")
 
         state = self.road.vehicle.state
