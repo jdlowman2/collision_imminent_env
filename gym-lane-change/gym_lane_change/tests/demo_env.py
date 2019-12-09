@@ -31,9 +31,11 @@ def demonstrate_action(test_action="random", sparse=False):
     s = env.reset()
     done = False
     total_reward = 0.0
+    tsteps = 0
     # IPython.embed()
 
     while not done:
+        tsteps += 1
         env.render()
         if type(test_action)==str and test_action.lower() == "random":
             a = env.action_space.sample()
@@ -44,6 +46,7 @@ def demonstrate_action(test_action="random", sparse=False):
         total_reward += r
         print("Total reward: ", total_reward)
         print("Test Action: ", test_action)
+    print("Total timesteps: ", tsteps)
     env.close()
 
     return total_reward

@@ -85,6 +85,12 @@ class TestRectangle(unittest.TestCase):
         r2 = Rectangle(1.0, 1.0, -0.499, -0.5)
         self.assertTrue(r1.intersects(r2))
 
+    def test_inside_rectangle(self):
+        r = Rectangle(10.0, 1.0, 5.0, 0.5)
+        for i in np.linspace(0.0, 10.0, 200):
+            for j in np.linspace(0.0, 1.0, 100):
+                self.assertTrue(r.is_inside(i, j))
+
 
 class TestRoad(unittest.TestCase):
 
