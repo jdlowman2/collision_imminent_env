@@ -62,10 +62,7 @@ class LaneChangeEnv(gym.Env):
                                 shape=self.road.get_observation().shape,
                                 dtype=np.float32)
 
-        # IPython.embed()
-        self.action_space = spaces.Box(self.road.vehicle.min_f,
-                                        self.road.vehicle.max_f,(2,),
-                                        dtype=np.float32)
+        self.action_space = spaces.Box(low=-1, high=1, shape=(2,), dtype=np.float32)
 
         self.valid_region = {"min_x": -10.0, "max_x": 110.0,
                                 "min_y": -10.0, "max_y": 20.0}
@@ -73,15 +70,23 @@ class LaneChangeEnv(gym.Env):
         self.sparse_reward=sparse_reward
         self.penalty = 0.1
 
-        # self.action_space = spaces.Box(low = np.array([self.road.vehicle.min_f,
-        #                                 self.road.vehicle.min_r]),
-        #                                 high = np.array([self.road.vehicle.max_f,
-        #                                 self.road.vehicle.max_r]),
-        #                                 shape=(2,), dtype=np.float32)
+    def scale_action_to_model(self, action):
+        action[0] = (action[0] + 1)/2.0 * \
+                    (self.road.vehicle.max_f_rate - self.road.vehicle.min_f_rate) +\
+                        self.road.vehicle.min_f_rate
+        action[1] = (action[1] + 1)/2.0 * \
+                    (self.road.vehicle.max_r_rate - self.road.vehicle.min_r_rate) +\
+                        self.road.vehicle.min_r_rate
+
+        return action
 
     def step(self, action):
         self.steps_taken += 1
-        self.road.vehicle.step(action)
+
+        # scale actions
+        scaled_action = self.scale_action_to_model(action)
+
+        self.road.vehicle.step(scaled_action)
 
         self.viewer.last_reward = self.get_reward()
 
@@ -145,12 +150,7 @@ class LaneChangeEnv(gym.Env):
         is_done = False
 
         if self.steps_taken >= self.max_steps or\
-            self.road.is_vehicle_in_collision():# or\
-                # self.road.is_vehicle_in_goal():
-
-            # print("Done because: ", self.steps_taken >= self.max_steps,
-            # self.road.is_vehicle_in_collision(),
-            #     self.road.is_vehicle_in_goal())
+            self.road.is_vehicle_in_collision():
             is_done = True
 
         if self.is_vehicle_outside_valid_region():

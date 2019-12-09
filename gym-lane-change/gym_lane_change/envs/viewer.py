@@ -91,23 +91,27 @@ class Viewer:
         # self.ax.add_artist(box)
 
     def plot_steering(self):
+        y_scale = 30.0/105.0
         arrow_scale = 5.0
+
         delta_f_norm = np.linalg.norm(self.road.vehicle.state.delta_f)
         delta_r_norm = np.linalg.norm(self.road.vehicle.state.delta_r)
+
         wheel_f = patches.Arrow(
                 x=80.0,
                 y=14.0,
-                dx = arrow_scale*np.cos(-self.road.vehicle.state.delta_f),
-                dy = arrow_scale*np.sin(-self.road.vehicle.state.delta_f),
+                dx = arrow_scale * np.cos(-self.road.vehicle.state.delta_f),
+                dy = arrow_scale * y_scale * np.sin(-self.road.vehicle.state.delta_f),
                 )
         wheel_b = patches.Arrow(
                 x=70.0,
                 y=14.0,
-                dx = arrow_scale*np.cos(-self.road.vehicle.state.delta_r),
-                dy = arrow_scale*np.sin(-self.road.vehicle.state.delta_r),
+                dx = arrow_scale * np.cos(-self.road.vehicle.state.delta_r),
+                dy = arrow_scale * y_scale * np.sin(-self.road.vehicle.state.delta_r),
                 )
         self.ax.text(x=80.0, y=16.0, s="Front\nSteer", color="black")
         self.ax.text(x=70.0, y=16.0, s="Rear\nSteer", color="black")
+
         self.ax.add_patch(wheel_f)
         self.ax.add_patch(wheel_b)
 

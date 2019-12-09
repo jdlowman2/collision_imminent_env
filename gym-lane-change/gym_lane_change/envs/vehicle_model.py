@@ -7,16 +7,22 @@ from rectangle import *
 
 import IPython
 
-MIN_F_STEERING = np.radians(-35.0)
 MAX_F_STEERING = np.radians(35.0)
+MIN_F_STEERING = -MAX_F_STEERING
 
-MIN_R_STEERING = np.radians(-5.0)
-MAX_R_STEERING = np.radians(5.0)
+MAX_R_STEERING = np.radians(10.0)
+MIN_R_STEERING = -MAX_R_STEERING
 
 ## These parameters should change together
 VEHICLE_TIMESTEP = 0.01
 INTEGRATION_STEPS_PER_UPDATE = 10
 ##
+
+MAX_F_STEERING_RATE = np.radians(35.0) # np.radians(70)*VEHICLE_TIMESTEP Paper says 70 degrees per second
+MAX_R_STEERING_RATE = np.radians(10.0) # Paper says 35 degrees per second
+
+MIN_F_STEERING_RATE = -MAX_F_STEERING_RATE
+MIN_R_STEERING_RATE = -MAX_R_STEERING_RATE
 
 def saturate_steering(delta, min_f, max_f, min_r, max_r):
     delta_f, delta_r = delta
@@ -60,6 +66,12 @@ class Vehicle:
         self.max_r = MAX_R_STEERING
         self.min_f = MIN_F_STEERING
         self.min_r = MIN_R_STEERING
+
+        self.max_f_rate = MAX_F_STEERING_RATE
+        self.max_r_rate = MAX_R_STEERING_RATE
+
+        self.min_f_rate = MIN_F_STEERING_RATE
+        self.min_r_rate = MIN_R_STEERING_RATE
 
     def get_rectangle(self):
         return Rectangle(self.length, self.width, self.state.x, self.state.y)

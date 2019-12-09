@@ -189,7 +189,9 @@ class TestEnv(unittest.TestCase):
         self.reset()
         env = LaneChangeEnv()
         env.road.vehicle = make_dummy_vehicle(env.road.goal.x - env.road.vehicle.length/2.0-1.0,
-                                        env.road.goal.y - env.road.vehicle.length/2.0 - 0.1)
+                                        env.road.goal.y - env.road.vehicle.width/2.0 - 0.1)
+        # env.render()
+        # IPython.embed()
 
         self.assertTrue(env.road.is_vehicle_in_goal(), "The environment should evaluate the vehicle as within the goal")
 

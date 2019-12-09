@@ -26,22 +26,24 @@ def show_setup():
     env.close()
 
 
-def demonstrate_action(action="random", sparse=False):
+def demonstrate_action(test_action="random", sparse=False):
     env = LaneChangeEnv(sparse)
     s = env.reset()
     done = False
     total_reward = 0.0
+    # IPython.embed()
 
     while not done:
         env.render()
-        if type(action)==str and action.lower() == "random":
+        if type(test_action)==str and test_action.lower() == "random":
             a = env.action_space.sample()
         else:
-            a = action
+            a = test_action.copy()
 
         s, r, done, info = env.step(a) # random action
         total_reward += r
         print("Total reward: ", total_reward)
+        print("Test Action: ", test_action)
     env.close()
 
     return total_reward
@@ -171,17 +173,30 @@ if __name__ == "__main__":
 
     sparse = args.sparse
     env = LaneChangeEnv()
+    low, high = env.action_space.low, env.action_space.high
 
     print(f"Demonstrating with sparse? {sparse}")
 
     print("Demonstrating random action...")
+    time.sleep(0.9)
     demonstrate_action("random", sparse)
 
     print("Demonstrating zero turning...")
-    demonstrate_action(0*env.action_space.low, sparse)
+    time.sleep(0.9)
+    demonstrate_action(0*low, sparse)
 
-    print("Demonstrating low action...")
-    demonstrate_action(env.action_space.low, sparse)
+    print("Demonstrating low action...", env.action_space.low)
+    time.sleep(0.9)
+    demonstrate_action(low, sparse)
 
     print("Demonstrating high action...")
-    demonstrate_action(env.action_space.high, sparse)
+    time.sleep(0.9)
+    demonstrate_action(high, sparse=sparse)
+
+    print("Demonstrating front wheel only action...")
+    time.sleep(0.9)
+    demonstrate_action(np.array([high[0], 0.0]), sparse=sparse)
+
+    print("Demonstrating front wheel only action...")
+    time.sleep(0.9)
+    demonstrate_action(np.array([low[0], 0.0]), sparse=sparse)

@@ -54,14 +54,14 @@ def compute_dx(si, vehicle, dt, test_input):
 class TestVehicle(unittest.TestCase):
 
     def test_no_input(self):
-        vehicle = make_dummy_vehicle(0.0, 0.0, 0.0)
-        for i in range(2):
+        vehicle = make_dummy_vehicle(0.0, 0.0, 35.0)
+        for i in range(10):
             vehicle.step([0.0, 0.0])
-            print("Vehicle state: ")
-            print(vehicle.state)
-            self.assertTrue(vehicle.state, State(0.0, 0.0, 0.0,
-                                                 0.0, 0.0, 0.0,
-                                                 0.0, 0.0))
+            # print(vehicle.state)
+            self.assertTrue(vehicle.state.psi == 0.0)
+            self.assertTrue(vehicle.state.u == 35.0)
+            self.assertTrue(vehicle.state.delta_f == 0.0)
+            self.assertTrue(vehicle.state.delta_r == 0.0)
 
     def test_saturate_steering(self):
         f, r = saturate_steering([MAX_F_STEERING, MAX_R_STEERING],
@@ -255,16 +255,14 @@ def plot_sigma(step):
     plt.tight_layout()
     # plt.show()
 
-# step = np.array([1.0, 0.0])
-step = np.array([np.radians(30).round(4), 0.0])
-plot_sigma(step)
-plot_action(step)
-plot_steering(step)
-plot_lateral_forces(step)
-plot_vehicle(step)
-# plot_vehicle_omega(step)
-# plot_vehicle_psi(step)
-plt.show()
+def plot_tests():
+    step = np.array([np.radians(30).round(4), 0.0])
+    plot_sigma(step)
+    plot_action(step)
+    plot_steering(step)
+    plot_lateral_forces(step)
+    plot_vehicle(step)
+    plt.show()
 
 if __name__ == '__main__':
     unittest.main()

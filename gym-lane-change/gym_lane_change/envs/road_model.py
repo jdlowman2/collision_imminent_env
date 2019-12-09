@@ -64,14 +64,10 @@ class Road:
         self.opposing_lane = Lane(length=1000, width=LANE_WIDTH,
                                     x=-100, y=LANE_WIDTH)
 
-        # obs_x =  np.random.uniform(loc=60.0, scale=3.0)
-        # obs_y =  np.random.uniform(loc=0.0, scale=10.0)
-        # obs_w =  np.random.uniform(loc=LANE_WIDTH, scale=0.1*LANE_WIDTH)
-        # obs_l =  np.random.uniform(loc=2.0*LANE_WIDTH, scale=0.1*LANE_WIDTH)
-        obs_x =  60.0
-        obs_y =  0.0
-        obs_w =  0.5*LANE_WIDTH
-        obs_l =  2.0*LANE_WIDTH
+        obs_x =  np.random.uniform(low=55.0,  high=65.0)
+        obs_y =  np.random.uniform(low=-0.1,  high=0.1)
+        obs_w =  np.random.uniform(low=0.45*LANE_WIDTH,  high=0.55*LANE_WIDTH)
+        obs_l =  np.random.uniform(low=1.9*LANE_WIDTH,  high=2.1*LANE_WIDTH)
 
         self.obstacle = Obstacle(length=obs_l, width=obs_w,
                                     x=obs_x, y=obs_y)
