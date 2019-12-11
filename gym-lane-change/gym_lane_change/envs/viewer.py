@@ -13,11 +13,14 @@ class Viewer:
         plt.ion() ## interactive to prevent blocking
         self.road = road
         self.fig, self.ax = plt.subplots(1, 1, num='LaneChangeEnv')
+        self.reset()
+        # self.car_img = plt.imread("car.png")
+
+    def reset(self):
         self.is_done = False
         self.last_reward = 0.0
-        self.plt_text = {"status": None, "reward": None, "state": None}
-
-        # self.car_img = plt.imread("car.png")
+        self.show()
+        plt.pause(0.1)
 
     def update_data(self, road):
         self.road = road
@@ -37,21 +40,14 @@ class Viewer:
         self.ax.set_ylim([-10, 20])
 
         plt.show()
-        plt.pause(0.1)
+        plt.pause(0.001)
 
     def clear_screen(self):
-        for text_key in list(self.plt_text.keys()):
-            try:
-                self.plt_text[text_key].set_visible(False)
-            except:
-                pass
+        for txt in self.ax.texts:
+            txt.remove()
 
-        self.plot_rectangle(Rectangle(length=1000.0,
-                                        width=3000.0,
-                                        x=-5.0,
-                                        y=-10.0),
-                                        color="white")
-
+        for rect in self.ax.patches:
+            rect.remove()
 
     def plot_lanes(self):
         self.plot_rectangle(self.road.current_lane, (0.86, 0.86, 0.86))
@@ -76,19 +72,26 @@ class Viewer:
                                                 self.road.vehicle.state.psi)
         t = td2dis + tr
 
-        r = patches.Rectangle(
+        vehicle = patches.Rectangle(
                         (self.road.vehicle.state.x - 0.5*self.road.vehicle.length,
                             self.road.vehicle.state.y - 0.5*self.road.vehicle.width),
                         height=self.road.vehicle.width,
                         width=self.road.vehicle.length,
                         facecolor="blue",
-                        transform=t)
+                        transform=t,
+                        zorder=100)
 
-        # oi = OffsetImage(self.car_img, zoom = 0.15)
-        # box = AnnotationBbox(oi, (self.road.vehicle.state.x, self.road.vehicle.state.y), frameon=False)
 
-        self.ax.add_patch(r)
-        # self.ax.add_artist(box)
+        # heading = patches.Arrow(
+        #         x=self.road.vehicle.state.x,
+        #         y=self.road.vehicle.state.y,
+        #         dx = self.road.vehicle.length * np.cos(self.road.vehicle.state.psi),
+        #         dy = 30/110.0*self.road.vehicle.length * np.sin(self.road.vehicle.state.psi),
+        #         color="white",
+        #         zorder=101)
+
+        self.ax.add_patch(vehicle)
+        # self.ax.add_patch(heading)
 
     def plot_steering(self):
         y_scale = 30.0/105.0
@@ -97,23 +100,21 @@ class Viewer:
         delta_f_norm = np.linalg.norm(self.road.vehicle.state.delta_f)
         delta_r_norm = np.linalg.norm(self.road.vehicle.state.delta_r)
 
-        wheel_f = patches.Arrow(
+        wheel_f = patches.Arrow(\
                 x=80.0,
                 y=14.0,
                 dx = arrow_scale * np.cos(-self.road.vehicle.state.delta_f),
                 dy = arrow_scale * y_scale * np.sin(-self.road.vehicle.state.delta_f),
                 )
-        wheel_b = patches.Arrow(
+        wheel_r = patches.Arrow(\
                 x=70.0,
                 y=14.0,
                 dx = arrow_scale * np.cos(-self.road.vehicle.state.delta_r),
                 dy = arrow_scale * y_scale * np.sin(-self.road.vehicle.state.delta_r),
                 )
-        self.ax.text(x=80.0, y=16.0, s="Front\nSteer", color="black")
-        self.ax.text(x=70.0, y=16.0, s="Rear\nSteer", color="black")
 
         self.ax.add_patch(wheel_f)
-        self.ax.add_patch(wheel_b)
+        self.ax.add_patch(wheel_r)
 
     def plot_status(self):
         if self.is_done:
@@ -123,35 +124,33 @@ class Viewer:
             txt = "RUNNING"
             c = "yellow"
 
-        self.plt_text["status"] = self.ax.text(x=0.0, y=15.0, s="Status:\n"+txt, color=c,
+        self.ax.text(x=0.0, y=15.0, s="Status:\n"+txt, color=c,
             bbox={'facecolor': 'black', 'pad': max(0, 7-len(txt))})
 
-        self.plt_text["reward"] = self.ax.text(x=40.0, y=-8.0,
+        self.ax.text(x=40.0, y=-8.0,
             s="Reward:\n"+str(round(self.last_reward, 2)),
             color="black")
 
-        self.plt_text["speed"] = self.ax.text(x=40.0, y=17.0,
+        self.ax.text(x=30.0, y=17.0,
             s=f"Speed: {round(self.road.vehicle.state.u, 2)} m/s",
             color="black")
-        self.plt_text["heading"] = self.ax.text(x=40.0, y=14.0,
+        self.ax.text(x=30.0, y=14.0,
             s=f"Heading: {round(np.degrees(self.road.vehicle.state.psi), 2)} deg",
             color="black")
 
-        state = self.road.vehicle.state
-        rounded_state = State(*[round(i, 1) for i in state])
 
-        # self.plt_text["state"] = self.ax.text(x=-5.0, y=-5.0,
-        #     s=str(rounded_state),
-        #     color="black")
+        self.ax.text(x=80.0, y=16.0, s="Front\nSteer", color="black")
+        self.ax.text(x=70.0, y=16.0, s="Rear\nSteer", color="black")
+
 
     def plot_rectangle(self, rect, color, angle=0.0):
-        rectangle = patches.Rectangle(
+        rect = patches.Rectangle(
                         (rect.x-0.5*rect.length, rect.y-0.5*rect.width),
                         height=rect.width,
                         width=rect.length,
                         angle = angle,
                         facecolor=color)
-        self.ax.add_patch(rectangle)
+        self.ax.add_patch(rect)
 
     def close(self):
         plt.close('all')
