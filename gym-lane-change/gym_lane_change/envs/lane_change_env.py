@@ -69,7 +69,6 @@ class LaneChangeEnv(gym.Env):
 
         self.sparse_reward=sparse_reward
         self.num_obstacles=num_obstacles
-        assert(num_obstacles==1) ## TODO: Remove when implemented
         self.penalty = 0.1
 
     def scale_action_to_model(self, action):

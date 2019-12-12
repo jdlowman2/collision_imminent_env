@@ -126,16 +126,16 @@ class TestEnv(unittest.TestCase):
         road = Road()
         self.assertFalse(road.is_vehicle_in_collision())
 
-        road.vehicle = make_dummy_vehicle(road.obstacle.x, road.obstacle.y)
+        road.vehicle = make_dummy_vehicle(road.obstacles[0].x, road.obstacles[0].y)
         self.assertTrue(road.is_vehicle_in_collision())
 
-        road.vehicle = make_dummy_vehicle(road.obstacle.x - road.obstacle.length/2.0,
-                                            road.obstacle.y)
+        road.vehicle = make_dummy_vehicle(road.obstacles[0].x - road.obstacles[0].length/2.0,
+                                            road.obstacles[0].y)
         self.assertTrue(road.is_vehicle_in_collision())
 
         road.vehicle = make_dummy_vehicle(\
-                        road.obstacle.x - road.obstacle.length/2.0- road.vehicle.length/2.0 - 1.0,
-                        road.obstacle.y)
+                        road.obstacles[0].x - road.obstacles[0].length/2.0- road.vehicle.length/2.0 - 1.0,
+                        road.obstacles[0].y)
         self.assertFalse(road.is_vehicle_in_collision())
 
 
@@ -167,7 +167,7 @@ class TestEnv(unittest.TestCase):
         r_outside_lane = env.get_reward()
         self.assertTrue(r_outside_lane < 0.0)
 
-        env.road.vehicle = make_dummy_vehicle(env.road.obstacle.x, env.road.obstacle.y)
+        env.road.vehicle = make_dummy_vehicle(env.road.obstacles[0].x, env.road.obstacles[0].y)
         r_collision = env.get_reward()
         self.assertTrue(r_collision < r_outside_lane, f"collision reward {r_collision}, outside lane reward {r_outside_lane}")
 

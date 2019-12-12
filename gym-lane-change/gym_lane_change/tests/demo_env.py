@@ -31,10 +31,10 @@ def demonstrate_action(test_action="random", sparse=False):
     s = env.reset()
 
     if not args.random:
-        env.road.obstacle.x = 60
-        env.road.obstacle.y = 0.0
-        env.road.obstacle.width = 0.5*LANE_WIDTH
-        env.road.obstacle.length = 2.0*LANE_WIDTH
+        env.road.obstacles[0].x = 60
+        env.road.obstacles[0].y = 0.0
+        env.road.obstacles[0].width = 0.5*LANE_WIDTH
+        env.road.obstacles[0].length = 2.0*LANE_WIDTH
 
         env.road.goal.x = 100.0
         env.road.goal.y = 0.0

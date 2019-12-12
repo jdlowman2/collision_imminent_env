@@ -79,11 +79,14 @@ class Road:
                                     x=-100, y=0)
         self.opposing_lane = Lane(length=1000, width=LANE_WIDTH,
                                     x=-100, y=LANE_WIDTH)
+        self.obstacles = []
 
-        obs_x = np.random.uniform(low=config["obs_x"][0], high=config["obs_x"][1])
-        obs_y = np.random.uniform(low=config["obs_y"][0], high=config["obs_y"][1])
-        self.obstacle = Obstacle(length=config["obs_l"], width=config["obs_w"],
-                                    x=obs_x, y=obs_y)
+        for obs_num in range(self.obs_num):
+            obs_x = np.random.uniform(low=config["obs_x"][0], high=config["obs_x"][1])
+            obs_y = np.random.uniform(low=config["obs_y"][0], high=config["obs_y"][1])
+
+            self.obstacles.append(Obstacle(length=obs_l, width=obs_w,
+                                        x=obs_x, y=obs_y))
 
         self.goal = Rectangle(length=5*LANE_WIDTH, width=0.5*LANE_WIDTH,
                                     x=100.0, y=0.0)
@@ -96,27 +99,19 @@ class Road:
             self.opposing_lane.is_inside(self.vehicle.state.x, self.vehicle.state.y)
 
     def is_vehicle_in_collision(self):
-        return self.obstacle.intersects(self.vehicle.get_rectangle())
+        for obstacle in self.obstacles:
+            if obstacle.intersects(self.vehicle.get_rectangle()):
+                return True
+
+        return False
 
     def is_vehicle_in_goal(self):
         return self.goal.intersects(self.vehicle.get_rectangle())
 
     def get_observation(self):
+        obs_coords = [obs.x for obs in self.obstacles] + [obs.y for obs in self.obstacles]
         obs = np.array([
                     *self.vehicle.state, # unpack 8 state parameters
-                    self.obstacle.x,
-                    self.obstacle.y,
-                    # self.obstacle.get_width(),
-                    # self.obstacle.get_length(),
-                    # self.obstacle.get_left_boundary(),
-                    # self.obstacle.get_right_boundary(),
-                    # self.obstacle.get_start(),
-                    # self.obstacle.get_end(),
-                    # self.current_lane.get_left_boundary(),
-                    # self.current_lane.get_right_boundary(),
-                    # self.opposing_lane.get_left_boundary(),
-                    # self.opposing_lane.get_right_boundary(),
-                    # self.goal.x, # for now, the goal is stationary so it doesn't need to be in the observation
-                    # self.goal.y,
+                    *obs_coords,
                 ])
         return obs

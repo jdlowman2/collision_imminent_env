@@ -30,7 +30,8 @@ class Viewer:
         self.clear_screen()
         self.plot_lanes()
 
-        self.plot_rectangle(self.road.obstacle, "red")
+        for obstacle in self.road.obstacles:
+            self.plot_rectangle(obstacle, "red")
         self.plot_rectangle(self.road.goal, "green")
 
         self.plot_vehicle()
