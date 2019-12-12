@@ -14,12 +14,14 @@ MAX_R_STEERING = np.radians(10.0)
 MIN_R_STEERING = -MAX_R_STEERING
 
 ## These parameters should change together
+# each call to vehicle.step updates by this timestep
 VEHICLE_TIMESTEP = 0.05
-INTEGRATION_STEPS_PER_UPDATE = 10
+# number of euler integrations per call to vehicle.step
+INTEGRATION_STEPS_PER_UPDATE = 2
 ##
 
-MAX_F_STEERING_RATE = np.radians(35.0) # np.radians(70)*VEHICLE_TIMESTEP Paper says 70 degrees per second
-MAX_R_STEERING_RATE = np.radians(10.0) # Paper says 35 degrees per second
+MAX_F_STEERING_RATE = np.radians(70.0) #*VEHICLE_TIMESTEP # np.radians(70)*VEHICLE_TIMESTEP Paper says 70 degrees per second
+MAX_R_STEERING_RATE = np.radians(35.0) # Paper says 35 degrees per second
 
 MIN_F_STEERING_RATE = -MAX_F_STEERING_RATE
 MIN_R_STEERING_RATE = -MAX_R_STEERING_RATE
