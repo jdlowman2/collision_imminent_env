@@ -56,7 +56,7 @@ class LaneChangeEnv(gym.Env):
         self.steps_taken = 0
 
         self.road = Road()
-        self.viewer = Viewer(self.road)
+        self.viewer = None
 
         self.observation_space = spaces.Box(-np.inf, np.inf,
                                 shape=self.road.get_observation().shape,
@@ -90,7 +90,8 @@ class LaneChangeEnv(gym.Env):
 
         self.road.vehicle.step(scaled_action)
 
-        self.viewer.last_reward = self.get_reward()
+        if self.viewer is not None:
+            self.viewer.last_reward = self.get_reward()
 
         return [self.get_observation(),
                 self.get_reward(),
@@ -100,12 +101,16 @@ class LaneChangeEnv(gym.Env):
     def reset(self):
         self.steps_taken = 0
         self.road.reset()
+        if self.viewer is not None:
+            self.viewer.reset()
         while self.is_vehicle_outside_valid_region():
             self.road.reset()
 
         return self.get_observation()
 
     def render(self, mode='human'):
+        if self.viewer is None:
+            self.viewer = Viewer(self.road)
         self.viewer.update_data(self.road)
         self.viewer.show()
 
