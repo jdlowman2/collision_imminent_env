@@ -46,11 +46,14 @@ class Road:
         self.reset()
 
     def reset(self):
-        speed = np.random.uniform(low=20.0, high=35.0)
+        # speed = np.random.uniform(low=20.0, high=30.0)
+        # start_x = np.random.uniform(low=0.0, high=10.0)
+        # start_y = np.random.uniform(low=0.0, high=.75*LANE_WIDTH)
+        # start_h = np.random.uniform(low=-np.radians(5.0), high=np.radians(5.0))
 
-        start_x = np.random.uniform(low = 0.0, high = 10.0)
-        start_y = np.random.uniform(low=-LANE_WIDTH/2.0,  high=1.5*LANE_WIDTH)
-
+        speed = np.random.uniform(low=20.0, high=30.0)
+        start_x = np.random.uniform(low=0.0, high=25.0)
+        start_y = np.random.uniform(low=-5.0, high=15.0)
         start_h = np.random.uniform(low=-np.radians(5.0), high=np.radians(5.0))
 
         front_wheel_angle = np.random.uniform(low=-np.radians(5.0), high=np.radians(5.0))
@@ -65,7 +68,7 @@ class Road:
                                     x=-100, y=LANE_WIDTH)
 
         # obs_x =  np.random.uniform(low=55.0,  high=65.0)
-        # obs_y =  np.random.uniform(low=-0.1,  high=0.1)
+        # obs_y =  np.random.uniform(low=-0.5*LANE_WIDTH,  high=0.5*LANE_WIDTH)
         # obs_w =  np.random.uniform(low=0.45*LANE_WIDTH,  high=0.55*LANE_WIDTH)
         # obs_l =  np.random.uniform(low=1.9*LANE_WIDTH,  high=2.1*LANE_WIDTH)
 
@@ -97,8 +100,8 @@ class Road:
                     *self.vehicle.state, # unpack 8 state parameters
                     self.obstacle.x,
                     self.obstacle.y,
-                    self.obstacle.get_width(),
-                    self.obstacle.get_length(),
+                    # self.obstacle.get_width(),
+                    # self.obstacle.get_length(),
                     # self.obstacle.get_left_boundary(),
                     # self.obstacle.get_right_boundary(),
                     # self.obstacle.get_start(),
