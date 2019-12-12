@@ -29,6 +29,20 @@ def show_setup():
 def demonstrate_action(test_action="random", sparse=False):
     env = LaneChangeEnv(sparse)
     s = env.reset()
+
+    if not args.random:
+        env.road.obstacle.x = 60
+        env.road.obstacle.y = 0.0
+        env.road.obstacle.width = 0.5*LANE_WIDTH
+        env.road.obstacle.length = 2.0*LANE_WIDTH
+
+        env.road.goal.x = 100.0
+        env.road.goal.y = 0.0
+        env.road.goal.width = 0.5*LANE_WIDTH
+        env.road.goal.length = 5.0*LANE_WIDTH
+
+        env.road.vehicle.state = State(0.0, 0.0, 0, 15.0, 0, 0, 0, 0)
+
     done = False
     total_reward = 0.0
     tsteps = 0
@@ -168,6 +182,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--sparse", action="store_true")
+    parser.add_argument("--random", action="store_true")
     args = parser.parse_args()
 
     np.set_printoptions(precision=2, suppress=True)
