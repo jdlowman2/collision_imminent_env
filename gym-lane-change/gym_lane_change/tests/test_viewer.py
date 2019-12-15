@@ -12,14 +12,14 @@ import numpy as np
 import time
 import IPython
 
-road = Road()
-viewer = Viewer(road)
+env = LaneChangeEnv(num_obstacles=4)
+env.reset()
+env.render()
 
 for i in range(50):
-    road.vehicle.step(np.array([np.radians(-3.0),
-                                  np.radians(1.0)]))
-    viewer.update_data(road)
-    viewer.show()
+    env.render()
+    env.step(np.array([np.radians(-3.0),
+                          np.radians(1.0)]))
 
 
 # env = LaneChangeEnv()

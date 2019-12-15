@@ -81,6 +81,9 @@ class Road:
                                     x=-100, y=LANE_WIDTH)
         self.obstacles = []
 
+        obs_w =  config["obs_w"]
+        obs_l =  config["obs_l"]
+
         for obs_num in range(self.obs_num):
             obs_x = np.random.uniform(low=config["obs_x"][0], high=config["obs_x"][1])
             obs_y = np.random.uniform(low=config["obs_y"][0], high=config["obs_y"][1])

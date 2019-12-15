@@ -40,8 +40,21 @@ def test_rewards(sparse):
     plt.scatter(env.road.goal.x, env.road.goal.y, color="green")
     plt.show()
 
+
+def make_obstacles_deterministic(obstacles):
+    new_obs = []
+    for i, obstacle in enumerate(obstacles):
+        obstacle.x = 20*(i+1)
+        obstacle.y = 0.0
+        obstacle.width = 0.5*LANE_WIDTH
+        obstacle.length = 2.0*LANE_WIDTH
+
+        new_obs.append(obstacle)
+
+    return new_obs
+
 def plot_rewards_map(sparse):
-    env = LaneChangeEnv(sparse)
+    env = LaneChangeEnv(sparse, num_obstacles=4)
     data = []
 
     # min_x, max_x = -10.0, 120.0
@@ -52,10 +65,7 @@ def plot_rewards_map(sparse):
 
     for y in np.linspace(min_y, max_y, 100):
         for x in np.linspace(min_x, max_x, 100):
-            env.road.obstacle.x = 60
-            env.road.obstacle.y = 0.0
-            env.road.obstacle.width = 0.5*LANE_WIDTH
-            env.road.obstacle.length = 2.0*LANE_WIDTH
+            # env.road.obstacles = make_obstacles_deterministic(env.road.obstacles)
 
             env.road.goal.x = 100.0
             env.road.goal.y = 0.0
