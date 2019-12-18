@@ -173,6 +173,7 @@ class TestEnv(unittest.TestCase):
 
     def test_sparse_rewards(self):
         env = LaneChangeEnv(True)
+        env.obstacles = [Obstacle(length=1, width=1, x=0, y=0)]
         env.road.vehicle = make_dummy_vehicle(env.road.goal.x, env.road.goal.y)
         self.assertTrue(env.get_reward() > 0.99)
 

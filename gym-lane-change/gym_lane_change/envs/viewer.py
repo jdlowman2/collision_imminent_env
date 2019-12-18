@@ -52,7 +52,7 @@ class Viewer:
             patch.remove()
 
     def plot_lanes(self):
-        self.plot_rectangle(self.road.current_lane, (0.86, 0.86, 0.86))
+        self.plot_rectangle(self.road.current_lane, (0.86, 0.86, 0.86)) # grey color
         self.plot_rectangle(self.road.opposing_lane, (0.86, 0.86, 0.86))
 
         for lane in [self.road.current_lane, self.road.opposing_lane]:
