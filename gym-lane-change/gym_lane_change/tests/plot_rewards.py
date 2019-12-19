@@ -78,8 +78,8 @@ def plot_rewards_map(sparse):
     plt.scatter([0.0], [0.0], c="blue", s=150, marker="s", alpha=0.5)
 
     plt.title("Rewards values at XY locations")
-    plt.xlabel("x")
-    plt.ylabel("y")
+    plt.xlabel("x [m]")
+    plt.ylabel("y [m]")
     # plt.show()
     plt.savefig(sparse*"sparse" + "reward_map"+ ".png", dpi=200)
     plt.close()
