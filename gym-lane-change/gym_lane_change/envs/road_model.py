@@ -41,8 +41,8 @@ config = {
             "vehicle_h": [-np.radians(5.0), np.radians(5.0)],
             "vehicle_f_wheel": [-np.radians(5.0), np.radians(5.0)],
             "vehicle_r_wheel": [-np.radians(1.0), np.radians(1.0)],
-            "obs_x": [55.0, 65.0],
-            "obs_y": [-1.85, 1.85],
+            "obs_x": [20.0, 120.0],
+            "obs_y": [-20.0, 20.0],
             "obs_w": 1.85,
             "obs_l": 7.4,
             }
