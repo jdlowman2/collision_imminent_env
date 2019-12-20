@@ -112,7 +112,11 @@ class Road:
         return self.goal.intersects(self.vehicle.get_rectangle())
 
     def get_observation(self):
-        obs_coords = [obs.x for obs in self.obstacles] + [obs.y for obs in self.obstacles]
+        obs_coords = [] # make obstacle states as [obs1.x, obs1.y, obs2.x, obs2.y, ...]
+        for obj in self.obstacles:
+            obs_coords.append(obj.x)
+            obs_coords.append(obj.y)
+
         obs = np.array([
                     *self.vehicle.state, # unpack 8 state parameters
                     *obs_coords,
