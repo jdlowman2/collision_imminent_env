@@ -14,6 +14,7 @@ class Viewer:
         self.road = road
         self.fig, self.ax = plt.subplots(1, 1, num='LaneChangeEnv')
         self.reset()
+        plt.pause(0.5)
         # self.car_img = plt.imread("car.png")
 
     def reset(self):
@@ -46,8 +47,8 @@ class Viewer:
         for txt in self.ax.texts:
             txt.remove()
 
-        for rect in self.ax.patches:
-            rect.remove()
+        for patch in self.ax.patches:
+            patch.remove()
 
     def plot_lanes(self):
         self.plot_rectangle(self.road.current_lane, (0.86, 0.86, 0.86))

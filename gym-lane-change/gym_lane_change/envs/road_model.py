@@ -34,6 +34,20 @@ LANE_WIDTH = 3.7 #m
 VEHICLE_START_STATE = State(0.0, 0.0, 0.0, 5.0, 0.0, 0.0, 0.0, 0.0)
 
 
+config = {
+            "vehicle_x": [0.0, 15.0],
+            "vehicle_y": [0.0, 5.0],
+            "vehicle_speed": [20.0, 30.0],
+            "vehicle_h": [-np.radians(5.0), np.radians(5.0)],
+            "vehicle_f_wheel": [-np.radians(5.0), np.radians(5.0)],
+            "vehicle_r_wheel": [-np.radians(1.0), np.radians(1.0)],
+            "obs_x": [55.0, 65.0],
+            "obs_y": [-1.85, 1.85],
+            "obs_w": 1.85,
+            "obs_l": 7.4,
+            }
+
+
 class Lane(Rectangle):
     pass
 
@@ -42,41 +56,33 @@ class Obstacle(Rectangle):
 
 
 class Road:
-    def __init__(self):
+    def __init__(self, num_obstacles=1):
+        self.obs_num = num_obstacles
+        assert(num_obstacles <= 4)
+
         self.reset()
 
     def reset(self):
-        # speed = np.random.uniform(low=20.0, high=30.0)
-        # start_x = np.random.uniform(low=0.0, high=10.0)
-        # start_y = np.random.uniform(low=0.0, high=.75*LANE_WIDTH)
-        # start_h = np.random.uniform(low=-np.radians(5.0), high=np.radians(5.0))
+        start_x = np.random.uniform(low=config["vehicle_x"][0], high=config["vehicle_x"][1])
+        start_y = np.random.uniform(low=config["vehicle_y"][0], high=config["vehicle_y"][1])
 
-        speed = np.random.uniform(low=20.0, high=30.0)
-        start_x = np.random.uniform(low=0.0, high=25.0)
-        start_y = np.random.uniform(low=-5.0, high=15.0)
-        start_h = np.random.uniform(low=-np.radians(5.0), high=np.radians(5.0))
+        speed = np.random.uniform(low=config["vehicle_speed"][0], high=config["vehicle_speed"][1])
+        start_h = np.random.uniform(low=config["vehicle_h"][0], high=config["vehicle_h"][1])
 
-        front_wheel_angle = np.random.uniform(low=-np.radians(5.0), high=np.radians(5.0))
-        rear_wheel_angle = np.random.uniform(low=-np.radians(1.0), high=np.radians(1.0))
+        front_wheel_angle = np.random.uniform(low=config["vehicle_f_wheel"][0], high=config["vehicle_f_wheel"][1])
+        rear_wheel_angle = np.random.uniform(low=config["vehicle_r_wheel"][0], high=config["vehicle_r_wheel"][1])
 
         start_state = State(start_x, start_y, start_h, speed, start_h, start_h, front_wheel_angle, rear_wheel_angle)
-
         self.vehicle = Vehicle(start_state)
+
         self.current_lane = Lane(length=1000, width=LANE_WIDTH,
                                     x=-100, y=0)
         self.opposing_lane = Lane(length=1000, width=LANE_WIDTH,
                                     x=-100, y=LANE_WIDTH)
 
-        obs_x =  np.random.uniform(low=55.0,  high=65.0)
-        obs_y =  np.random.uniform(low=-0.5*LANE_WIDTH,  high=0.5*LANE_WIDTH)
-        # obs_w =  np.random.uniform(low=0.45*LANE_WIDTH,  high=0.55*LANE_WIDTH)
-        # obs_l =  np.random.uniform(low=1.9*LANE_WIDTH,  high=2.1*LANE_WIDTH)
-
-        # obs_x, obs_y =  60.0, 0.0
-        obs_w =  0.5*LANE_WIDTH
-        obs_l =  2.0*LANE_WIDTH
-
-        self.obstacle = Obstacle(length=obs_l, width=obs_w,
+        obs_x = np.random.uniform(low=config["obs_x"][0], high=config["obs_x"][1])
+        obs_y = np.random.uniform(low=config["obs_y"][0], high=config["obs_y"][1])
+        self.obstacle = Obstacle(length=config["obs_l"], width=config["obs_w"],
                                     x=obs_x, y=obs_y)
 
         self.goal = Rectangle(length=5*LANE_WIDTH, width=0.5*LANE_WIDTH,

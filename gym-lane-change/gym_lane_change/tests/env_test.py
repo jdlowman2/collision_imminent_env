@@ -113,6 +113,7 @@ class TestEnv(unittest.TestCase):
 
     def test_vehicle_in_road(self):
         road = Road()
+        road.vehicle = make_dummy_vehicle(0.0, 0.0)
         self.assertTrue(road.is_vehicle_in_road())
 
         road.vehicle = make_dummy_vehicle(0.0, - 1.1 * LANE_WIDTH)
