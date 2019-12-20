@@ -67,12 +67,12 @@ class Road:
         self.opposing_lane = Lane(length=1000, width=LANE_WIDTH,
                                     x=-100, y=LANE_WIDTH)
 
-        # obs_x =  np.random.uniform(low=55.0,  high=65.0)
-        # obs_y =  np.random.uniform(low=-0.5*LANE_WIDTH,  high=0.5*LANE_WIDTH)
+        obs_x =  np.random.uniform(low=55.0,  high=65.0)
+        obs_y =  np.random.uniform(low=-0.5*LANE_WIDTH,  high=0.5*LANE_WIDTH)
         # obs_w =  np.random.uniform(low=0.45*LANE_WIDTH,  high=0.55*LANE_WIDTH)
         # obs_l =  np.random.uniform(low=1.9*LANE_WIDTH,  high=2.1*LANE_WIDTH)
 
-        obs_x, obs_y =  60.0, 0.0
+        # obs_x, obs_y =  60.0, 0.0
         obs_w =  0.5*LANE_WIDTH
         obs_l =  2.0*LANE_WIDTH
 
