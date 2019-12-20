@@ -55,7 +55,7 @@ class LaneChangeEnv(gym.Env):
         self.max_steps = MAX_ENV_STEPS
         self.steps_taken = 0
 
-        self.road = Road()
+        self.road = Road(num_obstacles)
         self.viewer = None
 
         self.observation_space = spaces.Box(-np.inf, np.inf,
@@ -103,7 +103,7 @@ class LaneChangeEnv(gym.Env):
         self.road.reset()
         if self.viewer is not None:
             self.viewer.reset()
-        while self.is_vehicle_outside_valid_region():
+        while self.is_vehicle_outside_valid_region() or self.road.is_vehicle_in_collision():
             self.road.reset()
 
         return self.get_observation()
