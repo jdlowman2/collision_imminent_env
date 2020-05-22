@@ -11,5 +11,7 @@ The environment was evaluated with a modified version of TD3 (twin delayed deep 
 
 A presentation of the project's goals and lessons learned 
 
-[Slides](Reinforcement Learning For Collision Imminent Environments.pdf)
-[Final Report](Final Report.pdf)
+[Slides](RLForCollisionImminentEnvironments.pdf)
+
+
+[Final Report](FinalReport.pdf)
